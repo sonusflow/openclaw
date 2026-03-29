@@ -263,6 +263,31 @@ function makeTokenPlugin(): ChannelPlugin {
   });
 }
 
+function makeSnapshotConfiguredPlugin(): ChannelPlugin {
+  return makeDirectPlugin({
+    id: "livekitclaw",
+    label: "LiveKit Claw",
+    docsPath: "/channels/livekitclaw",
+    config: {
+      listAccountIds: () => ["default"],
+      defaultAccountId: () => "default",
+      resolveAccount: () => ({
+        name: "livekitclaw",
+        enabled: true,
+        configured: false,
+      }),
+      isConfigured: () => false,
+      isEnabled: () => true,
+      describeAccount: () => ({
+        accountId: "default",
+        name: "livekitclaw",
+        enabled: true,
+        configured: true,
+      }),
+    },
+  });
+}
+
 describe("buildChannelsTable - mattermost token summary", () => {
   it("does not require appToken for mattermost accounts", async () => {
     vi.mocked(listChannelPlugins).mockReturnValue([makeMattermostPlugin()]);
@@ -387,5 +412,18 @@ describe("buildChannelsTable - mattermost token summary", () => {
     expect(tokenRow).toBeDefined();
     expect(tokenRow?.state).toBe("ok");
     expect(tokenRow?.detail).toContain("token");
+  });
+
+  it("uses resolved snapshot configured state in the status summary", async () => {
+    vi.mocked(listChannelPlugins).mockReturnValue([makeSnapshotConfiguredPlugin()]);
+
+    const table = await buildChannelsTable({ channels: {} } as never, {
+      showSecrets: false,
+    });
+
+    const livekitRow = table.rows.find((row) => row.id === "livekitclaw");
+    expect(livekitRow).toBeDefined();
+    expect(livekitRow?.state).toBe("ok");
+    expect(livekitRow?.detail).toBe("configured");
   });
 });

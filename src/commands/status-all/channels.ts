@@ -37,6 +37,10 @@ type ChannelAccountRow = {
   snapshot: ChannelAccountSnapshot;
 };
 
+function isSnapshotConfigured(entry: ChannelAccountRow): boolean {
+  return entry.snapshot.configured !== false;
+}
+
 type ResolvedChannelAccountRowParams = {
   plugin: ChannelPlugin;
   cfg: OpenClawConfig;
@@ -508,7 +512,7 @@ export async function buildChannelsTable(
 
     const anyEnabled = accounts.some((a) => a.enabled);
     const enabledAccounts = accounts.filter((a) => a.enabled);
-    const configuredAccounts = enabledAccounts.filter((a) => a.configured);
+    const configuredAccounts = enabledAccounts.filter(isSnapshotConfigured);
     const unavailableConfiguredAccounts = enabledAccounts.filter((a) =>
       hasConfiguredUnavailableCredentialStatus(a.account),
     );
