@@ -99,7 +99,10 @@ function normalizeMention(text: string, mention: string | undefined): string {
 
 function isSystemPost(post: MattermostPost): boolean {
   const type = post.type?.trim();
-  return Boolean(type);
+  if (!type) return false;
+  // Allow plugin custom post types (e.g. "custom_voice" from Voice plugin)
+  if (type.startsWith("custom_")) return false;
+  return true;
 }
 
 function channelKind(channelType?: string | null): ChatType {
@@ -516,10 +519,13 @@ export async function monitorMattermostProvider(opts: MonitorMattermostOpts = {}
       kind !== "direct" &&
       ((botUsername ? rawText.toLowerCase().includes(`@${botUsername.toLowerCase()}`) : false) ||
         core.channel.mentions.matchesMentionPatterns(rawText, mentionRegexes));
+    const hasFiles =
+      (post.file_ids?.length ?? 0) > 0 ||
+      (post.type === "custom_voice" && typeof post.props?.fileId === "string");
     const pendingBody =
       rawText ||
-      (post.file_ids?.length
-        ? `[Mattermost ${post.file_ids.length === 1 ? "file" : "files"}]`
+      (hasFiles
+        ? `[Mattermost ${post.type === "custom_voice" ? "voice message" : (post.file_ids?.length ?? 0) === 1 ? "file" : "files"}]`
         : "");
     const pendingSender = senderName;
     const recordPendingHistory = () => {
@@ -571,7 +577,12 @@ export async function monitorMattermostProvider(opts: MonitorMattermostOpts = {}
         return;
       }
     }
-    const mediaList = await resolveMattermostMedia(post.file_ids);
+    // Collect file IDs from standard file_ids and custom post type props
+    const fileIds = [...(post.file_ids ?? [])];
+    if (post.type === "custom_voice" && typeof post.props?.fileId === "string") {
+      fileIds.push(post.props.fileId);
+    }
+    const mediaList = await resolveMattermostMedia(fileIds);
     const mediaPlaceholder = buildMattermostAttachmentPlaceholder(mediaList);
     const bodySource = oncharTriggered ? oncharResult.stripped : rawText;
     const baseText = [bodySource, mediaPlaceholder].filter(Boolean).join("\n").trim();
@@ -964,6 +975,10 @@ export async function monitorMattermostProvider(opts: MonitorMattermostOpts = {}
     },
     shouldDebounce: (entry) => {
       if (entry.post.file_ids && entry.post.file_ids.length > 0) {
+        return false;
+      }
+      // Voice messages are complete on arrival — skip debounce
+      if (entry.post.type === "custom_voice") {
         return false;
       }
       const text = entry.post.message?.trim() ?? "";

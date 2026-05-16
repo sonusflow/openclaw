@@ -20,7 +20,11 @@
     "paths": {
       "openclaw/plugin-sdk": ["./src/plugin-sdk/index.ts"],
       "openclaw/plugin-sdk/*": ["./src/plugin-sdk/*.ts"],
-      "openclaw/plugin-sdk/account-id": ["./src/plugin-sdk/account-id.ts"]
+      "openclaw/plugin-sdk/account-id": ["./src/plugin-sdk/account-id.ts"],
+      "@mariozechner/pi-agent-core": ["./pi-mono/packages/agent/src/index.ts"],
+      "@mariozechner/pi-ai": ["./pi-mono/packages/ai/src/index.ts"],
+      "@mariozechner/pi-coding-agent": ["./pi-mono/packages/coding-agent/src/index.ts"],
+      "@mariozechner/pi-tui": ["./pi-mono/packages/tui/src/index.ts"]
     }
   },
   "include": ["src/**/*", "ui/**/*", "extensions/**/*"],

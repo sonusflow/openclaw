@@ -83,6 +83,9 @@ USER.md
 # local tooling
 .serena/
 
+# Local pi-mono development checkout
+pi-mono/
+
 # Agent credentials and memory (NEVER COMMIT)
 /memory/
 .agent/*.json
