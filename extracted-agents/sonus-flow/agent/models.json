@@ -1,0 +1,26 @@
+{
+  "providers": {
+    "moonshot": {
+      "baseUrl": "https://api.moonshot.ai/v1",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "kimi-k2.5",
+          "name": "Kimi K2.5",
+          "reasoning": false,
+          "input": ["text", "image"],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 256000,
+          "maxTokens": 8192,
+          "api": "openai-completions"
+        }
+      ],
+      "apiKey": "sk-JKuMa59sFey2bssraAz8n3AmIO6wkwIn7ev2zd8GiaF5UWH1"
+    }
+  }
+}

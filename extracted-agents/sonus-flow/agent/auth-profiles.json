@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "profiles": {
+    "anthropic:default": {
+      "type": "token",
+      "provider": "anthropic",
+      "token": "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"
+    },
+    "moonshot:default": {
+      "type": "api_key",
+      "provider": "moonshot",
+      "key": "sk-JKuMa59sFey2bssraAz8n3AmIO6wkwIn7ev2zd8GiaF5UWH1"
+    },
+    "openai:speaches": {
+      "type": "token",
+      "provider": "openai",
+      "token": "not-needed"
+    }
+  },
+  "lastGood": {
+    "anthropic": "anthropic:default",
+    "moonshot": "moonshot:default",
+    "openai": "openai:speaches"
+  }
+}
